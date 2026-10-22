@@ -38,4 +38,23 @@ describe('RomanentForm', () => {
 
     await waitFor(() => expect(labelInput).toHaveValue(''))
   })
+
+  it('defaults the year to the current one', () => {
+    render(<RomanentForm />)
+    expect(screen.getByDisplayValue(String(new Date().getFullYear()))).toBeInTheDocument()
+  })
+
+  it('calls onDone after a successful submit', async () => {
+    addEntry.mockResolvedValueOnce()
+    const onDone = vi.fn()
+    render(<RomanentForm onDone={onDone} />)
+
+    fireEvent.change(screen.getByPlaceholderText('Descripció (p.ex. Acumulat 2025)'), {
+      target: { value: 'Acumulat 2024' },
+    })
+    fireEvent.change(screen.getByPlaceholderText('Import €'), { target: { value: '60' } })
+    fireEvent.click(screen.getByText('Afegir'))
+
+    await waitFor(() => expect(onDone).toHaveBeenCalled())
+  })
 })

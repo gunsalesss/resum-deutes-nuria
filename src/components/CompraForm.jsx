@@ -3,7 +3,7 @@ import { TIPUS } from '../lib/constants'
 import { addEntry } from '../lib/entries'
 import { fetchLinkPreview } from '../lib/linkPreview'
 
-export default function CompraForm() {
+export default function CompraForm({ onDone }) {
   const [link, setLink] = useState('')
   const [label, setLabel] = useState('')
   const [image, setImage] = useState('')
@@ -48,6 +48,7 @@ export default function CompraForm() {
       setImage('')
       setAmount('')
       setError('')
+      onDone?.()
     } catch {
       // ja notificat via toast
     } finally {

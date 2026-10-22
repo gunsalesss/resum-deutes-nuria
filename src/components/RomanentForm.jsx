@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { TIPUS } from '../lib/constants'
 import { addEntry } from '../lib/entries'
 
-export default function RomanentForm() {
+export default function RomanentForm({ onDone }) {
   const [label, setLabel] = useState('')
   const [year, setYear] = useState(new Date().getFullYear())
   const [amount, setAmount] = useState('')
@@ -21,6 +21,7 @@ export default function RomanentForm() {
       })
       setLabel('')
       setAmount('')
+      onDone?.()
     } catch {
       // ja notificat via toast
     } finally {
