@@ -1,0 +1,35 @@
+name: Afegir mensualitat Movistar
+
+on:
+  schedule:
+    # Cada dia 1 del mes a les 06:00 UTC
+    - cron: '0 6 1 * *'
+  workflow_dispatch:
+    inputs:
+      year:
+        description: 'Any (opcional, per defecte el mes actual)'
+        required: false
+      month:
+        description: 'Mes 1-12 (opcional, per defecte el mes actual)'
+        required: false
+
+jobs:
+  add-entry:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: |
+          node scripts/addMonthlyMovistar.mjs \
+            ${{ inputs.year && format('--year {0}', inputs.year) || '' }} \
+            ${{ inputs.month && format('--month {0}', inputs.month) || '' }}
+        env:
+          VITE_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
