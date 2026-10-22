@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { formatEuros, MESOS } from '../lib/constants'
-import { removeEntry, setSaldada, updateEntry } from '../lib/entries'
+import { removeEntry, setSaldada } from '../lib/entries'
+import EntryEditForm from './EntryEditForm'
 
 export default function EntryRow({ entry }) {
   const [editing, setEditing] = useState(false)
-  const [amount, setAmount] = useState(entry.amount)
 
   const subtitle = []
   if (entry.month != null) subtitle.push(`${MESOS[entry.month - 1]} ${entry.year}`)
@@ -17,12 +17,12 @@ export default function EntryRow({ entry }) {
     }
   }
 
-  async function handleSaveAmount() {
-    const n = Number(amount)
-    if (!Number.isNaN(n)) {
-      await updateEntry(entry.id, { amount: n })
-    }
-    setEditing(false)
+  if (editing) {
+    return (
+      <div className="entry-row entry-row-editing">
+        <EntryEditForm entry={entry} onDone={() => setEditing(false)} />
+      </div>
+    )
   }
 
   return (
@@ -45,21 +45,7 @@ export default function EntryRow({ entry }) {
         {subtitle.length > 0 && <span className="entry-subtitle">{subtitle.join(' · ')}</span>}
       </div>
       <div className="entry-amount-col">
-        {editing ? (
-          <input
-            type="number"
-            step="0.01"
-            autoFocus
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            onBlur={handleSaveAmount}
-            onKeyDown={(e) => e.key === 'Enter' && handleSaveAmount()}
-          />
-        ) : (
-          <button className="entry-amount" onClick={() => setEditing(true)}>
-            {formatEuros(entry.amount)}
-          </button>
-        )}
+        <span className="entry-amount">{formatEuros(entry.amount)}</span>
       </div>
       <label className="entry-saldada">
         <input
@@ -67,8 +53,11 @@ export default function EntryRow({ entry }) {
           checked={!!entry.saldada}
           onChange={(e) => setSaldada(entry.id, e.target.checked)}
         />
-        Saldada
+        <span>Saldada</span>
       </label>
+      <button className="entry-edit" title="Editar" onClick={() => setEditing(true)}>
+        ✎
+      </button>
       <button className="entry-delete" title="Eliminar" onClick={handleDelete}>
         ✕
       </button>

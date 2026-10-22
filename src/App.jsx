@@ -8,6 +8,7 @@ import MensualitatForm from './components/MensualitatForm'
 import CompraForm from './components/CompraForm'
 import RomanentForm from './components/RomanentForm'
 import EntryList from './components/EntryList'
+import ToastHost from './components/ToastHost'
 import { subscribeToEntries } from './lib/entries'
 import { TIPUS } from './lib/constants'
 
@@ -53,6 +54,7 @@ export default function App() {
 
   return (
     <div className="app">
+      <ToastHost />
       <header className="app-header">
         <h1>{TITLES[tab]}</h1>
         <ThemeToggle />
