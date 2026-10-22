@@ -48,6 +48,8 @@ export default function CompraForm() {
       setImage('')
       setAmount('')
       setError('')
+    } catch {
+      // ja notificat via toast
     } finally {
       setSaving(false)
     }

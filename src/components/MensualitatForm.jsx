@@ -42,6 +42,8 @@ export default function MensualitatForm({ mensualitats }) {
       const next = nextPendingMonth([...mensualitats, { year, month }])
       setYear(next.year)
       setMonth(next.month)
+    } catch {
+      // ja notificat via toast
     } finally {
       setSaving(false)
     }

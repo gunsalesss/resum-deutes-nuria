@@ -21,6 +21,8 @@ export default function RomanentForm() {
       })
       setLabel('')
       setAmount('')
+    } catch {
+      // ja notificat via toast
     } finally {
       setSaving(false)
     }
