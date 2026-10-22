@@ -11,7 +11,8 @@ export default function EntryRow({ entry }) {
   else if (entry.year) subtitle.push(`${entry.year}`)
   if (entry.note) subtitle.push(entry.note)
 
-  async function handleDelete() {
+  async function handleDelete(e) {
+    e.stopPropagation()
     if (window.confirm(`Segur que vols eliminar "${entry.label}"?`)) {
       await removeEntry(entry.id)
     }
@@ -26,16 +27,31 @@ export default function EntryRow({ entry }) {
   }
 
   return (
-    <div className={`entry-row ${entry.saldada ? 'saldada' : ''}`}>
+    <div
+      className={`entry-row entry-row-clickable ${entry.saldada ? 'saldada' : ''}`}
+      onClick={() => setEditing(true)}
+    >
       {entry.image && (
-        <a href={entry.link} target="_blank" rel="noreferrer" className="entry-thumb">
+        <a
+          href={entry.link}
+          target="_blank"
+          rel="noreferrer"
+          className="entry-thumb"
+          onClick={(e) => e.stopPropagation()}
+        >
           <img src={entry.image} alt="" />
         </a>
       )}
       <div className="entry-info">
         <div className="entry-title-line">
           {entry.link ? (
-            <a href={entry.link} target="_blank" rel="noreferrer" className="entry-label">
+            <a
+              href={entry.link}
+              target="_blank"
+              rel="noreferrer"
+              className="entry-label"
+              onClick={(e) => e.stopPropagation()}
+            >
               {entry.label}
             </a>
           ) : (
@@ -47,7 +63,7 @@ export default function EntryRow({ entry }) {
       <div className="entry-amount-col">
         <span className="entry-amount">{formatEuros(entry.amount)}</span>
       </div>
-      <label className="entry-saldada">
+      <label className="entry-saldada" onClick={(e) => e.stopPropagation()}>
         <input
           type="checkbox"
           checked={!!entry.saldada}
@@ -55,9 +71,6 @@ export default function EntryRow({ entry }) {
         />
         <span>Saldada</span>
       </label>
-      <button className="entry-edit" title="Editar" onClick={() => setEditing(true)}>
-        ✎
-      </button>
       <button className="entry-delete" title="Eliminar" onClick={handleDelete}>
         ✕
       </button>

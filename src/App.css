@@ -67,6 +67,16 @@
   gap: 6px;
 }
 
+.stat-card-link {
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.stat-card-link:hover {
+  border-color: var(--accent);
+}
+
 .stat-card-main {
   grid-column: 1 / -1;
   background: var(--accent-soft);
@@ -358,7 +368,6 @@ a.entry-label:hover {
   white-space: nowrap;
 }
 
-.entry-edit,
 .entry-delete {
   background: none;
   border: none;
@@ -369,12 +378,16 @@ a.entry-label:hover {
   flex-shrink: 0;
 }
 
-.entry-edit:hover {
-  color: var(--accent);
-}
-
 .entry-delete:hover {
   color: var(--warn-text);
+}
+
+.entry-row-clickable {
+  cursor: pointer;
+}
+
+.entry-row-clickable:hover {
+  border-color: var(--accent);
 }
 
 /* Edit form */
@@ -511,12 +524,8 @@ a.entry-label:hover {
     order: 3;
   }
 
-  .entry-edit {
-    order: 4;
-  }
-
   .entry-delete {
-    order: 5;
+    order: 4;
     margin-left: auto;
   }
 }

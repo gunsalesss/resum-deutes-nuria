@@ -63,7 +63,12 @@ export default function App() {
       {error && <p className="form-error global-error">{error}</p>}
 
       {tab === 'resum' && (
-        <Summary totalDeute={totalDeute} totalCompres={totalCompres} saldoPendent={saldoPendent} />
+        <Summary
+          totalDeute={totalDeute}
+          totalCompres={totalCompres}
+          saldoPendent={saldoPendent}
+          onSelectTab={setTab}
+        />
       )}
 
       {loading ? (

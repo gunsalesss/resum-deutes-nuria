@@ -1,6 +1,6 @@
 import { formatEuros } from '../lib/constants'
 
-export default function Summary({ totalDeute, totalCompres, saldoPendent }) {
+export default function Summary({ totalDeute, totalCompres, saldoPendent, onSelectTab }) {
   const aFavorNostre = saldoPendent < 0
 
   return (
@@ -12,15 +12,15 @@ export default function Summary({ totalDeute, totalCompres, saldoPendent }) {
         <span className="stat-value">{formatEuros(Math.abs(saldoPendent))}</span>
       </div>
 
-      <div className="stat-card">
+      <button className="stat-card stat-card-link" onClick={() => onSelectTab('mensualitats')}>
         <span className="stat-label">Deutes acumulats</span>
         <span className="stat-value stat-value-sm">{formatEuros(totalDeute)}</span>
-      </div>
+      </button>
 
-      <div className="stat-card">
+      <button className="stat-card stat-card-link" onClick={() => onSelectTab('compres')}>
         <span className="stat-label">Compres fetes</span>
         <span className="stat-value stat-value-sm">{formatEuros(totalCompres)}</span>
-      </div>
+      </button>
     </section>
   )
 }
