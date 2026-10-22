@@ -1,24 +1,7 @@
 import { useMemo, useState } from 'react'
 import { DEFAULT_MENSUALITAT, MESOS, TIPUS } from '../lib/constants'
 import { addEntry } from '../lib/entries'
-
-function nextPendingMonth(mensualitats) {
-  const now = new Date()
-  const existing = new Set(mensualitats.map((m) => `${m.year}-${m.month}`))
-  // Comença a buscar des de fa 24 mesos per si falta omplir mesos antics
-  let d = new Date(now.getFullYear(), now.getMonth() - 24, 1)
-  const limit = new Date(now.getFullYear(), now.getMonth(), 1)
-  let candidate = { year: now.getFullYear(), month: now.getMonth() + 1 }
-  while (d <= limit) {
-    const key = `${d.getFullYear()}-${d.getMonth() + 1}`
-    if (!existing.has(key)) {
-      candidate = { year: d.getFullYear(), month: d.getMonth() + 1 }
-      break
-    }
-    d.setMonth(d.getMonth() + 1)
-  }
-  return candidate
-}
+import { nextPendingMonth } from '../lib/nextPendingMonth'
 
 export default function MensualitatForm({ mensualitats }) {
   const suggestion = useMemo(() => nextPendingMonth(mensualitats), [mensualitats])
