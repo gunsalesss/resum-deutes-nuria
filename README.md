@@ -47,6 +47,17 @@ npm install
 npm run dev
 ```
 
+## Tests
+
+```bash
+npm test          # tests unitaris i d'integració (Vitest + Testing Library)
+npm run test:watch
+```
+
+Els tests no toquen Firestore real: mockegen el SDK de firebase (`firebase/firestore`)
+perquè es puguin executar sense xarxa ni emulador. S'executen automàticament
+a cada Pull Request (`.github/workflows/test.yml`).
+
 ## 3. Importar les dades inicials (opcional, un cop)
 
 Amb el `.env` ja configurat, per carregar les dades que ja teníeu a la llista de WhatsApp:
