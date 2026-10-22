@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { fetchLinkPreview } from './linkPreview'
 
 function mockFetchOnce(body, ok = true) {
@@ -8,8 +8,25 @@ function mockFetchOnce(body, ok = true) {
   })
 }
 
+function okJson(body) {
+  return { ok: true, json: () => Promise.resolve(body) }
+}
+
+// Avança els setTimeout dels reintents sense esperar de debò.
+async function flushRetries(promise, times = 2) {
+  for (let i = 0; i < times; i++) {
+    await vi.advanceTimersByTimeAsync(1000)
+  }
+  return promise
+}
+
 describe('fetchLinkPreview', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
   afterEach(() => {
+    vi.useRealTimers()
     vi.unstubAllGlobals()
   })
 
@@ -28,14 +45,12 @@ describe('fetchLinkPreview', () => {
     expect(calledUrl).toContain(encodeURIComponent('https://www.amazon.es/dp/ABC123'))
   })
 
-  it('returns title, image and description on success', async () => {
-    vi.stubGlobal(
-      'fetch',
-      mockFetchOnce({
-        status: 'success',
-        data: { title: 'Un producte', image: { url: 'https://img/1.jpg' }, description: 'desc' },
-      })
-    )
+  it('returns title, image and description on success, without retrying', async () => {
+    const fetchMock = mockFetchOnce({
+      status: 'success',
+      data: { title: 'Un producte', image: { url: 'https://img/1.jpg' }, description: 'desc' },
+    })
+    vi.stubGlobal('fetch', fetchMock)
 
     const result = await fetchLinkPreview('https://www.amazon.es/dp/ABC123')
 
@@ -44,30 +59,24 @@ describe('fetchLinkPreview', () => {
       image: 'https://img/1.jpg',
       description: 'desc',
     })
+    expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 
   it('retries with the resolved, query-stripped url when a short link returns no data', async () => {
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            status: 'success',
-            data: { url: 'https://www.amazon.es/dp/ABC123?ref=tracking123' },
-          }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            status: 'success',
-            data: { title: 'Trobat al segon intent', image: { url: 'https://img/2.jpg' } },
-          }),
-      })
+      .mockResolvedValueOnce(
+        okJson({ status: 'success', data: { url: 'https://www.amazon.es/dp/ABC123?ref=tracking123' } })
+      )
+      .mockResolvedValueOnce(
+        okJson({
+          status: 'success',
+          data: { title: 'Trobat al segon intent', image: { url: 'https://img/2.jpg' } },
+        })
+      )
     vi.stubGlobal('fetch', fetchMock)
 
-    const result = await fetchLinkPreview('https://amzn.eu/d/short')
+    const result = await flushRetries(fetchLinkPreview('https://amzn.eu/d/short'), 1)
 
     expect(fetchMock).toHaveBeenCalledTimes(2)
     expect(fetchMock.mock.calls[1][0]).toContain(
@@ -76,23 +85,47 @@ describe('fetchLinkPreview', () => {
     expect(result.title).toBe('Trobat al segon intent')
   })
 
-  it('returns empty fields when nothing is found after retrying', async () => {
+  it('retries up to 3 times in total before giving up', async () => {
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () =>
-          Promise.resolve({ status: 'success', data: { url: 'https://x.com/final?ref=1' } }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ status: 'success', data: {} }),
-      })
+      .mockResolvedValueOnce(okJson({ status: 'success', data: {} }))
+      .mockResolvedValueOnce(okJson({ status: 'success', data: {} }))
+      .mockResolvedValueOnce(okJson({ status: 'success', data: {} }))
     vi.stubGlobal('fetch', fetchMock)
 
-    const result = await fetchLinkPreview('https://short.link/x')
+    const result = await flushRetries(fetchLinkPreview('https://example.com'), 2)
 
+    expect(fetchMock).toHaveBeenCalledTimes(3)
     expect(result).toEqual({ title: '', image: '', description: '' })
+  })
+
+  it('succeeds on a later retry after Amazon blocks the first attempts (link.yu flaky scraping)', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(okJson({ status: 'success', data: {} }))
+      .mockResolvedValueOnce(okJson({ status: 'success', data: {} }))
+      .mockResolvedValueOnce(
+        okJson({ status: 'success', data: { title: 'Trobat al 3r intent', image: { url: 'https://img/3.jpg' } } })
+      )
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await flushRetries(fetchLinkPreview('https://www.amazon.es/dp/ABC123'), 2)
+
+    expect(fetchMock).toHaveBeenCalledTimes(3)
+    expect(result.title).toBe('Trobat al 3r intent')
+  })
+
+  it('keeps retrying even if an intermediate attempt throws', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(okJson({ status: 'success', data: {} }))
+      .mockRejectedValueOnce(new Error('network blip'))
+      .mockResolvedValueOnce(okJson({ status: 'success', data: { title: 'Trobat' } }))
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await flushRetries(fetchLinkPreview('https://example.com'), 2)
+
+    expect(result.title).toBe('Trobat')
   })
 
   it('throws when the HTTP response is not ok', async () => {
