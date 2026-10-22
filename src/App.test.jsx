@@ -114,19 +114,37 @@ describe('App (integració)', () => {
     expect(screen.getByRole('heading', { name: 'Compres' })).toBeInTheDocument()
   })
 
-  it('afegeix una mensualitat des del formulari i actualitza el resum a l\'instant', async () => {
+  it('afegeix una mensualitat des del botó gran i tanca el modal en desar', async () => {
     render(<App />)
     await waitFor(() => screen.getByText('Mensualitats'))
     fireEvent.click(screen.getByText('Mensualitats'))
 
+    fireEvent.click(screen.getByText('Afegir mensualitat'))
+    expect(screen.getByRole('dialog', { name: 'Nova mensualitat' })).toBeInTheDocument()
+
     fireEvent.click(screen.getByText('Afegir'))
 
     await waitFor(() => expect(screen.getByText('Movistar')).toBeInTheDocument())
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+
     fireEvent.click(screen.getByText('Resum'))
     await waitFor(() => {
       const mainCard = document.querySelector('.stat-card-main')
       expect(within(mainCard).getByText('24,00 €')).toBeInTheDocument()
     })
+  })
+
+  it('obre el modal d\'afegir directament des de les targetes ràpides del Resum', async () => {
+    render(<App />)
+    await waitFor(() => screen.getByText('Compra'))
+    fireEvent.click(screen.getByText('Compra'))
+
+    expect(screen.getByRole('dialog', { name: 'Nova compra' })).toBeInTheDocument()
+    // la pestanya activa continua sent Resum, el modal es mostra per sobre
+    expect(screen.getByRole('heading', { name: 'Resum' })).toBeInTheDocument()
+
+    fireEvent.click(screen.getByLabelText('Tancar'))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
   it('edita una entrada clicant la targeta i deixa l\'import actualitzat', async () => {
@@ -184,6 +202,7 @@ describe('App (integració)', () => {
     render(<App />)
     await waitFor(() => screen.getByText('Romanents'))
     fireEvent.click(screen.getByText('Romanents'))
+    fireEvent.click(screen.getByText('Afegir romanent'))
 
     fireEvent.change(screen.getByPlaceholderText('Descripció (p.ex. Acumulat 2025)'), {
       target: { value: 'Acumulat 2024' },

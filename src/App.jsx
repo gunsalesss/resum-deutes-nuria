@@ -4,6 +4,8 @@ import Summary from './components/Summary'
 import QuickCreate from './components/QuickCreate'
 import BottomNav from './components/BottomNav'
 import ThemeToggle from './components/ThemeToggle'
+import AddButton from './components/AddButton'
+import Modal from './components/Modal'
 import MensualitatForm from './components/MensualitatForm'
 import CompraForm from './components/CompraForm'
 import RomanentForm from './components/RomanentForm'
@@ -19,6 +21,12 @@ const TITLES = {
   romanents: 'Romanents',
 }
 
+const ADD_MODALS = {
+  mensualitats: { title: 'Nova mensualitat', Form: MensualitatForm },
+  compres: { title: 'Nova compra', Form: CompraForm },
+  romanents: { title: 'Nou romanent', Form: RomanentForm },
+}
+
 function sumPending(entries) {
   return entries.reduce((acc, e) => acc + (e.saldada ? 0 : Number(e.amount) || 0), 0)
 }
@@ -28,6 +36,7 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [tab, setTab] = useState('resum')
+  const [addModalType, setAddModalType] = useState(null)
 
   useEffect(() => {
     const unsub = subscribeToEntries(
@@ -51,6 +60,9 @@ export default function App() {
   const totalDeute = sumPending(mensualitats) + sumPending(romanents)
   const totalCompres = sumPending(compres)
   const saldoPendent = totalDeute - totalCompres
+
+  const activeModal = addModalType ? ADD_MODALS[addModalType] : null
+  const ActiveForm = activeModal?.Form
 
   return (
     <div className="app">
@@ -77,7 +89,7 @@ export default function App() {
         <main className="tab-content">
           {tab === 'resum' && (
             <>
-              <QuickCreate onSelect={setTab} />
+              <QuickCreate onSelect={setAddModalType} />
               <section>
                 <h2>Últimes mensualitats</h2>
                 <EntryList entries={mensualitats.slice(-5).reverse()} />
@@ -91,21 +103,21 @@ export default function App() {
 
           {tab === 'mensualitats' && (
             <section>
-              <MensualitatForm mensualitats={mensualitats} />
+              <AddButton label="Afegir mensualitat" onClick={() => setAddModalType('mensualitats')} />
               <EntryList entries={mensualitats} groupByYear />
             </section>
           )}
 
           {tab === 'compres' && (
             <section>
-              <CompraForm />
+              <AddButton label="Afegir compra" onClick={() => setAddModalType('compres')} />
               <EntryList entries={[...compres].reverse()} />
             </section>
           )}
 
           {tab === 'romanents' && (
             <section>
-              <RomanentForm />
+              <AddButton label="Afegir romanent" onClick={() => setAddModalType('romanents')} />
               <EntryList entries={[...romanents].reverse()} />
             </section>
           )}
@@ -113,6 +125,12 @@ export default function App() {
       )}
 
       <BottomNav tab={tab} onChange={setTab} />
+
+      {activeModal && (
+        <Modal title={activeModal.title} onClose={() => setAddModalType(null)}>
+          <ActiveForm onDone={() => setAddModalType(null)} />
+        </Modal>
+      )}
     </div>
   )
 }

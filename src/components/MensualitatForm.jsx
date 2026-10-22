@@ -1,12 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { DEFAULT_MENSUALITAT, MESOS, TIPUS } from '../lib/constants'
 import { addEntry } from '../lib/entries'
-import { nextPendingMonth } from '../lib/nextPendingMonth'
 
-export default function MensualitatForm({ mensualitats }) {
-  const suggestion = useMemo(() => nextPendingMonth(mensualitats), [mensualitats])
-  const [year, setYear] = useState(suggestion.year)
-  const [month, setMonth] = useState(suggestion.month)
+export default function MensualitatForm({ onDone }) {
+  const now = new Date()
+  const [year, setYear] = useState(now.getFullYear())
+  const [month, setMonth] = useState(now.getMonth() + 1)
   const [label, setLabel] = useState(DEFAULT_MENSUALITAT.label)
   const [amount, setAmount] = useState(DEFAULT_MENSUALITAT.amount)
   const [saving, setSaving] = useState(false)
@@ -22,9 +21,7 @@ export default function MensualitatForm({ mensualitats }) {
         year: Number(year),
         month: Number(month),
       })
-      const next = nextPendingMonth([...mensualitats, { year, month }])
-      setYear(next.year)
-      setMonth(next.month)
+      onDone?.()
     } catch {
       // ja notificat via toast
     } finally {

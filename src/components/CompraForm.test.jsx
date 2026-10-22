@@ -74,4 +74,18 @@ describe('CompraForm', () => {
 
     await waitFor(() => expect(labelInput).toHaveValue(''))
   })
+
+  it('calls onDone after a successful submit', async () => {
+    addEntry.mockResolvedValueOnce()
+    const onDone = vi.fn()
+    render(<CompraForm onDone={onDone} />)
+
+    fireEvent.change(screen.getByPlaceholderText("Nom de l'article"), {
+      target: { value: 'Sabates' },
+    })
+    fireEvent.change(screen.getByPlaceholderText('Preu €'), { target: { value: '45' } })
+    fireEvent.click(screen.getByText('Afegir compra'))
+
+    await waitFor(() => expect(onDone).toHaveBeenCalled())
+  })
 })
