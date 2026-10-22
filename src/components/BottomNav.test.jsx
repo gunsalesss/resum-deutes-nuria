@@ -5,7 +5,7 @@ import BottomNav from './BottomNav'
 describe('BottomNav', () => {
   it('renders all four tabs', () => {
     render(<BottomNav tab="resum" onChange={vi.fn()} />)
-    ;['Resum', 'Mensualitats', 'Compres', 'Romanents'].forEach((label) => {
+    ;['Resum', 'Deutes', 'Compres', 'Romanents'].forEach((label) => {
       expect(screen.getByText(label)).toBeInTheDocument()
     })
   })

@@ -206,13 +206,20 @@
 .compra-form-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 16px;
   align-items: center;
 }
 
 .compra-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   margin-bottom: 16px;
+}
+
+.compra-form .compra-form-row {
+  margin-bottom: 0;
 }
 
 .inline-form input,
@@ -280,11 +287,14 @@
 .entry-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 14px;
 }
 
 .year-group {
-  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 22px;
 }
 
 .year-group-header {
@@ -295,7 +305,6 @@
   font-size: 13px;
   padding: 4px 4px 8px;
   border-bottom: 1px solid var(--border);
-  margin-bottom: 8px;
 }
 
 .entry-row {
@@ -627,25 +636,30 @@ a.entry-label:hover {
 }
 
 .modal-body .inline-form,
-.modal-body .compra-form-row {
-  margin-bottom: 0;
-}
-
-.modal-body .inline-form,
 .modal-body .compra-form-row,
 .modal-body .edit-form-row {
   flex-direction: column;
   align-items: stretch;
+  gap: 14px;
+  margin-bottom: 0;
+}
+
+.modal-body .compra-form {
+  gap: 18px;
 }
 
 .modal-body input,
 .modal-body select,
 .modal-body button {
   width: 100%;
+  font-size: 16px;
+  padding: 14px;
+  border-radius: 12px;
 }
 
 .modal-body .compra-form-row:first-child {
   flex-direction: row;
+  gap: 10px;
 }
 
 .modal-body .compra-form-row:first-child input {
@@ -655,6 +669,14 @@ a.entry-label:hover {
 
 .modal-body .compra-form-row:first-child button {
   width: auto;
+  white-space: nowrap;
+}
+
+.modal-body .inline-form button,
+.modal-body .compra-form-row button {
+  font-size: 16px;
+  font-weight: 700;
+  padding: 15px;
 }
 
 @keyframes modal-fade-in {

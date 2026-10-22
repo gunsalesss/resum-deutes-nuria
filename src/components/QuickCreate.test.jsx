@@ -5,7 +5,7 @@ import QuickCreate from './QuickCreate'
 describe('QuickCreate', () => {
   it('renders the three quick-create actions', () => {
     render(<QuickCreate onSelect={vi.fn()} />)
-    expect(screen.getByText('Mensualitat')).toBeInTheDocument()
+    expect(screen.getByText('Deute')).toBeInTheDocument()
     expect(screen.getByText('Compra')).toBeInTheDocument()
     expect(screen.getByText('Romanent')).toBeInTheDocument()
   })

@@ -16,13 +16,13 @@ import { TIPUS } from './lib/constants'
 
 const TITLES = {
   resum: 'Resum',
-  mensualitats: 'Mensualitats',
+  mensualitats: 'Deutes',
   compres: 'Compres',
   romanents: 'Romanents',
 }
 
 const ADD_MODALS = {
-  mensualitats: { title: 'Nova mensualitat', Form: MensualitatForm },
+  mensualitats: { title: 'Nou deute', Form: MensualitatForm },
   compres: { title: 'Nova compra', Form: CompraForm },
   romanents: { title: 'Nou romanent', Form: RomanentForm },
 }
@@ -91,7 +91,7 @@ export default function App() {
             <>
               <QuickCreate onSelect={setAddModalType} />
               <section>
-                <h2>Últimes mensualitats</h2>
+                <h2>Últims deutes</h2>
                 <EntryList entries={mensualitats.slice(-5).reverse()} />
               </section>
               <section>
@@ -103,7 +103,7 @@ export default function App() {
 
           {tab === 'mensualitats' && (
             <section>
-              <AddButton label="Afegir mensualitat" onClick={() => setAddModalType('mensualitats')} />
+              <AddButton label="Afegir deute" onClick={() => setAddModalType('mensualitats')} />
               <EntryList entries={mensualitats} groupByYear />
             </section>
           )}

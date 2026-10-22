@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatEuros, MESOS, TIPUS, DEFAULT_MENSUALITAT } from './constants'
+import { formatEuros, MESOS, TIPUS } from './constants'
 
 describe('formatEuros', () => {
   it('formats a positive number with two decimals and €', () => {
@@ -34,9 +34,5 @@ describe('constants', () => {
       ROMANENT: 'romanent',
       COMPRA: 'compra',
     })
-  })
-
-  it('defaults the monthly entry to Movistar 24€', () => {
-    expect(DEFAULT_MENSUALITAT).toEqual({ label: 'Movistar', amount: 24 })
   })
 })

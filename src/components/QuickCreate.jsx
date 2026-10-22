@@ -1,7 +1,7 @@
 import { CalendarIcon, BagIcon, ArchiveIcon } from './icons'
 
 const ITEMS = [
-  { key: 'mensualitats', label: 'Mensualitat', Icon: CalendarIcon },
+  { key: 'mensualitats', label: 'Deute', Icon: CalendarIcon },
   { key: 'compres', label: 'Compra', Icon: BagIcon },
   { key: 'romanents', label: 'Romanent', Icon: ArchiveIcon },
 ]
