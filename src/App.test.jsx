@@ -100,11 +100,11 @@ describe('App (integració)', () => {
     expect(within(mainCard).getByText('24,00 €')).toBeInTheDocument()
   })
 
-  it('navega a Mensualitats en clicar la targeta "Deutes acumulats"', async () => {
+  it('navega a Deutes en clicar la targeta "Deutes acumulats"', async () => {
     render(<App />)
     await waitFor(() => screen.getByText('Deutes acumulats'))
     fireEvent.click(screen.getByText('Deutes acumulats'))
-    expect(screen.getByRole('heading', { name: 'Mensualitats' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Deutes' })).toBeInTheDocument()
   })
 
   it('navega a Compres en clicar la targeta "Compres fetes"', async () => {
@@ -114,14 +114,20 @@ describe('App (integració)', () => {
     expect(screen.getByRole('heading', { name: 'Compres' })).toBeInTheDocument()
   })
 
-  it('afegeix una mensualitat des del botó gran i tanca el modal en desar', async () => {
+  it('afegeix un deute des del botó gran, en blanc per defecte, i tanca el modal en desar', async () => {
     render(<App />)
-    await waitFor(() => screen.getByText('Mensualitats'))
-    fireEvent.click(screen.getByText('Mensualitats'))
+    await waitFor(() => screen.getByText('Deutes'))
+    fireEvent.click(screen.getByText('Deutes'))
 
-    fireEvent.click(screen.getByText('Afegir mensualitat'))
-    expect(screen.getByRole('dialog', { name: 'Nova mensualitat' })).toBeInTheDocument()
+    fireEvent.click(screen.getByText('Afegir deute'))
+    expect(screen.getByRole('dialog', { name: 'Nou deute' })).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Concepte (p.ex. Movistar)')).toHaveValue('')
+    expect(screen.getByPlaceholderText('Import €')).toHaveValue(null)
 
+    fireEvent.change(screen.getByPlaceholderText('Concepte (p.ex. Movistar)'), {
+      target: { value: 'Movistar' },
+    })
+    fireEvent.change(screen.getByPlaceholderText('Import €'), { target: { value: '24' } })
     fireEvent.click(screen.getByText('Afegir'))
 
     await waitFor(() => expect(screen.getByText('Movistar')).toBeInTheDocument())
@@ -152,8 +158,8 @@ describe('App (integració)', () => {
       { type: 'mensualitat', label: 'Movistar', amount: 24, year: 2026, month: 1, saldada: false },
     ])
     render(<App />)
-    await waitFor(() => screen.getByText('Mensualitats'))
-    fireEvent.click(screen.getByText('Mensualitats'))
+    await waitFor(() => screen.getByText('Deutes'))
+    fireEvent.click(screen.getByText('Deutes'))
 
     await waitFor(() => screen.getByText('Movistar'))
     fireEvent.click(screen.getByText('Movistar'))
@@ -170,8 +176,8 @@ describe('App (integració)', () => {
       { type: 'mensualitat', label: 'Movistar', amount: 24, year: 2026, month: 1, saldada: false },
     ])
     render(<App />)
-    await waitFor(() => screen.getByText('Mensualitats'))
-    fireEvent.click(screen.getByText('Mensualitats'))
+    await waitFor(() => screen.getByText('Deutes'))
+    fireEvent.click(screen.getByText('Deutes'))
 
     await waitFor(() => screen.getByText('Movistar'))
     fireEvent.click(screen.getByRole('checkbox'))
